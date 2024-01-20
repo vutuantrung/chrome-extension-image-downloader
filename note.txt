@@ -1,0 +1,2 @@
+_ The message port closed before a response was received
+-> close extension then re-upload

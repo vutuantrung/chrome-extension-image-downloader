@@ -1,0 +1,544 @@
+html,
+body {
+    overflow-y: scroll;
+    height: 100%;
+    margin: 0;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.grid {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4px 0;
+}
+
+.grid td {
+    padding: 2px;
+}
+
+.grid td:first-child {
+    padding-left: 0;
+}
+
+.grid td:last-child {
+    padding-right: 0;
+}
+
+.grid td input[type="text"],
+.grid td input[type="button"],
+.grid td input[type="number"],
+.grid td select {
+    width: 100%;
+}
+
+#filters_container,
+#downloads_container {
+    z-index: 4;
+    position: sticky;
+    padding: 5px;
+    background: var(--neutral-lightest);
+}
+
+#filters_container {
+    top: 0;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+}
+
+#filters_container .filter-platforms {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#filters_container .filter-platforms .user-view {
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+}
+
+#filters_container .filter-platforms .user-view img {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    margin-right: 5px;
+}
+
+#filters_container .filter-platforms .buttons-view {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#exchange_button,
+#toggle_advanced_filters_button,
+#open_options_button {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+
+    border-radius: var(--border-radius-md);
+    border: 0;
+    margin-bottom: 4px;
+    background: var(--input-background);
+}
+
+#toggle_advanced_filters_button .toggle {
+    height: 20px;
+
+    transition: var(--transition-transform);
+}
+
+#toggle_advanced_filters_button.collapsed .toggle {
+    transform: rotate(-90deg);
+}
+
+#exchange_button img,
+#open_options_button img {
+    width: 20px;
+    height: 20px;
+}
+
+.noUi-state-drag {
+    cursor: grabbing;
+}
+
+.noUi-horizontal {
+    height: 12px;
+}
+
+.noUi-target {
+    border-color: var(--accent);
+    transition: var(--transition-border-color);
+}
+
+.noUi-target[disabled] {
+    border-color: var(--border-color);
+}
+
+.noUi-connects {
+    cursor: pointer;
+}
+
+.noUi-connect {
+    background: var(--accent);
+    transition: var(--transition-background);
+}
+
+.noUi-target[disabled] .noUi-connect {
+    background: var(--input-background);
+}
+
+.noUi-horizontal .noUi-origin .noUi-handle {
+    cursor: grab;
+    top: -5px;
+    right: -9px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border-color: var(--accent);
+
+    transition: var(--transition-border-color);
+}
+
+.noUi-horizontal .noUi-origin[disabled] .noUi-handle {
+    cursor: help;
+    border-color: var(--border-color);
+}
+
+.noUi-handle::before,
+.noUi-handle::after {
+    top: 3px;
+    height: 10px;
+}
+
+.noUi-handle::before {
+    left: 6px;
+}
+
+.noUi-handle::after {
+    left: 9px;
+}
+
+#only_images_from_links_container {
+    padding: 1px;
+}
+
+#images_container {
+    flex: 1;
+
+    display: grid;
+    gap: var(--images-container-gap);
+    padding: var(--images-container-padding);
+    padding-top: 9px;
+    /* Account for checkbox 3px margin */
+    background: var(--neutral-lighter);
+}
+
+.select_all_checkbox {
+    grid-column: 1 / -1;
+    font-weight: bold;
+    padding: 5px 0px 5px 12px;
+}
+
+#images_container .card {
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+
+    display: grid;
+    grid-template-rows: 1fr auto;
+    justify-items: center;
+    align-items: center;
+
+    box-shadow: var(--elevation-1);
+    border-radius: var(--border-radius-sm);
+    border: 2px solid transparent;
+    background: var(--neutral-lightest);
+
+    transition: var(--transition-border-color), var(--transition-box-shadow);
+}
+
+#images_container .card .info {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 3;
+    color: white;
+    opacity: 0;
+    transition: 0.5s;
+}
+
+#images_container .card .info h1 {
+    margin: 0;
+    font-size: 15px;
+}
+
+#images_container .card .info p {
+    margin: 0;
+    font-size: 12px;
+}
+
+#images_container .card .info .model-img {
+    width: 17px;
+    height: 17px;
+    background: transparent;
+    margin: 0px 5px 0px 5px;
+}
+
+#images_container .card .info .size-img {
+    width: 23px;
+    height: 17px;
+    background: transparent;
+    margin: 0px 5px 0px 5px;
+}
+
+#images_container .card .imgDisplay {
+    -webkit-transform: scale(1);
+    -webkit-filter: blur(0);
+    transform: scale(1);
+    filter: blur(0);
+    -webkit-transition: 0.3s ease-in-out;
+    transition: 0.3s ease-in-out;
+}
+
+#images_container .card:hover .imgDisplay {
+    -webkit-transform: scale(1.2);
+    -webkit-filter: blur(1.3px);
+    transform: scale(1.2);
+    filter: blur(1.3px);
+}
+
+#images_container .card:hover {
+    box-shadow: var(--elevation-2);
+}
+
+#images_container .card.checked {
+    border-color: var(--accent);
+}
+
+#images_container img {
+    background: var(--image-background);
+    /* Useful for transparent images */
+}
+
+#images_container .checkbox,
+#images_container .image_url_container,
+#images_container .actions {
+    position: absolute;
+
+    transition: var(--transition-opacity);
+    opacity: 0;
+}
+
+#images_container .card.checked .checkbox,
+#images_container .card:hover .checkbox,
+#images_container .card:hover .image_url_container,
+#images_container .card:hover .actions,
+#images_container .card:hover .info {
+    opacity: 1;
+}
+
+#images_container .checkbox {
+    top: 4px;
+    left: 4px;
+}
+
+#images_container .actions {
+    top: 4px;
+    right: 4px;
+}
+
+#images_container .actions button {
+    cursor: pointer;
+    border-radius: var(--border-radius-md);
+    border: 2px solid var(--neutral);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 24px;
+    padding: 15px;
+
+    transition: var(--transition-background);
+    background-color: var(--neutral-lightest);
+}
+
+#images_container .actions button:hover {
+    background-color: var(--neutral-lighter);
+}
+
+#images_container .image_url_container {
+    right: 4px;
+    bottom: 4px;
+    left: 4px;
+}
+
+/* checkbox */
+#images_container .checkbox {
+    width: 34px;
+    height: 34px;
+
+    border-radius: var(--border-radius-md);
+    border: 2px solid var(--neutral);
+    background: var(--neutral-lightest);
+
+    transition: var(--transition-background), var(--transition-border-color), var(--transition-opacity);
+}
+
+#images_container .card.checked .checkbox {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+#images_container .checkbox::after {
+    position: absolute;
+    top: calc(50% - 9px);
+    left: calc(50% - 9px);
+    width: 18px;
+    height: 12px;
+    content: "";
+    transform: rotate(-45deg);
+    border: 4px solid var(--neutral-lightest);
+    border-top: 0;
+    border-right: 0;
+
+    transition: var(--transition-border-color), var(--transition-opacity);
+}
+
+#images_container .card:hover .checkbox::after {
+    border-color: var(--neutral-light);
+}
+
+#images_container .card.checked .checkbox::after {
+    border-color: var(--neutral-lightest);
+}
+
+/* checkbox */
+
+/* actions */
+#images_container .actions {
+    display: flex;
+    gap: 4px;
+}
+
+/* actions */
+
+/* image_url_container */
+#images_container .image_url_container {
+    background: var(--neutral-lighter);
+}
+
+#images_container .image_url_container input[type="text"] {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+/* image_url_container */
+
+#downloads_container {
+    bottom: 0;
+    display: grid;
+    gap: 4px;
+    border-top: 1px solid var(--border-color);
+}
+
+#downloads_container .suggestion-name {
+    min-width: 0px;
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.url-filtering {
+    flex: 1;
+    padding: 5px 12px 5px 12px;
+    background-color: #f0f0f0;
+    margin-bottom: 4px;
+    gap: 4px;
+    height: 19px;
+}
+
+.url-customize-container {
+    margin-right: 5px;
+    margin-left: 5px;
+    height: 30px;
+}
+.url-customize-container .url-customize {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.url-customize-container .url-customize .text {
+    flex: 1;
+    padding: 5px 12px 5px 12px;
+    background-color: #f0f0f0;
+    margin-bottom: 4px;
+    gap: 4px;
+    height: 30px;
+    border-radius: 4px;
+}
+
+.waiting-component {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.yt-content .video-thumbs {
+    width: 450px;
+    overflow: hidden;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-bottom: 56.25%;
+    position: relative;
+}
+
+.yt-content .video-thumbs iframe {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.yt-content .thumbs {
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.yt-content .video-responsive iframe {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.yt-content .title {
+    margin-top: 0;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.yt-content .title h2 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.yt-content .details {
+    margin-right: 10px;
+    margin-left: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.yt-content .details .detail-item {
+    height: 30px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(180, 180, 180, 0.5);
+}
+
+.yt-content .details .detail-item img {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+}
+
+.yt-content .details .detail-item h3 {
+    background-color: "red";
+}
+
+.yt-content .description {
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 10px;
+    background-color: rgba(180, 180, 180, 0.5);
+}
+
+.yt-content .description .content {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.yt-content .formats {
+    margin: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.yt-content .formats .tooltip {
+    width: 107px;
+    cursor: pointer;
+}
+.yt-content .formats .content {
+    display: flex;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: space-between;
+}
+.yt-content .formats .content .video-format {
+    display: flex;
+    align-self: center;
+}
+.yt-content .formats .content .video-format img {
+    width: 20px;
+    height: 20px;
+}
