@@ -98,20 +98,20 @@ const App = () => {
             currentPageName === "youtube"
                 ? []
                 : medias.filter((media) => {
-                      const source = encodeURI(media.mediaType === "image" ? media.src : media.thumbs);
-                      const image = imagesCacheRef.current.querySelector(`img[src="${source}"]`);
+                    const source = encodeURI(media.mediaType === "image" ? media.src : media.thumbs);
+                    const image = imagesCacheRef.current.querySelector(`img[src="${source}"]`);
 
-                      return (
-                          (options.filter_min_width_enabled !== "true" ||
-                              options.filter_min_width <= image.naturalWidth) &&
-                          (options.filter_max_width_enabled !== "true" ||
-                              options.filter_max_width >= image.naturalWidth) &&
-                          (options.filter_min_height_enabled !== "true" ||
-                              options.filter_min_height <= image.naturalHeight) &&
-                          (options.filter_max_height_enabled !== "true" ||
-                              options.filter_max_height >= image.naturalHeight)
-                      );
-                  });
+                    return (
+                        (options.filter_min_width_enabled !== "true" ||
+                            options.filter_min_width <= image.naturalWidth) &&
+                        (options.filter_max_width_enabled !== "true" ||
+                            options.filter_max_width >= image.naturalWidth) &&
+                        (options.filter_min_height_enabled !== "true" ||
+                            options.filter_min_height <= image.naturalHeight) &&
+                        (options.filter_max_height_enabled !== "true" ||
+                            options.filter_max_height >= image.naturalHeight)
+                    );
+                });
 
         setMedias(medias);
     };

@@ -6,6 +6,7 @@ import { changeOptionsMode, getIconByMode } from "../../helpers/urlHelper";
 import { useEffect, useState } from "react";
 import { FilterUrl } from "./FilterUrl";
 import images from "../../constants/images";
+import { CollectMedia } from "./CollectMedia";
 
 export const FilterContainer = ({ options, setOptions, medias, setMedias, currentPageName }) => {
     const [showOptionMenu, setShowOptionMenu] = useState(false);
@@ -57,7 +58,8 @@ export const FilterContainer = ({ options, setOptions, medias, setMedias, curren
     function changeFilterMode() {
         let newMode;
         if (options.filter_mode === "size") newMode = "url";
-        if (options.filter_mode === "url") newMode = "size";
+        if (options.filter_mode === "url") newMode = "collect";
+        if (options.filter_mode === "collect") newMode = "size";
 
         setOptions((options) => ({ ...options, filter_mode: newMode }));
     }
@@ -75,6 +77,31 @@ export const FilterContainer = ({ options, setOptions, medias, setMedias, curren
         setOptions((options) => ({ ...options, filter_url_mode: value }));
     }
 
+    function displayFilter() {
+        if (["jjgirl", "youtube"].includes(currentPageName)) return <></>;
+        let filterMode = <></>;
+        if (options.filter_mode === "size") {
+            filterMode = <FilterSizes options={options} setOptions={setOptions} />;
+        }
+        if (options.filter_mode === "url") {
+            filterMode = <CustomizeUrl urlFiltering={options.filter_url} setChangeUrlTasks={setChangeUrlTasks} />;
+        }
+        if (options.filter_mode === "collect") {
+            filterMode = <CollectMedia urlFiltering={options.filter_url} setChangeUrlTasks={setChangeUrlTasks} />;
+        }
+
+        return (
+            <div>
+                <FilterUrl
+                    options={options}
+                    changeFilterUrl={changeFilterUrl}
+                    changeFilterUrlMode={changeFilterUrlMode}
+                />
+                {options.show_advanced_filters === "true" && filterMode}
+            </div>
+        );
+    }
+
     return (
         <div id="filters_container">
             <div className="filter-platforms">
@@ -83,7 +110,11 @@ export const FilterContainer = ({ options, setOptions, medias, setMedias, curren
                     <div>Welcome, user</div>
                 </div>
                 <div className="buttons-view">
-                    <button id="exchange_button" title="Change filter mode" onClick={changeFilterMode}>
+                    <button
+                        id="exchange_button"
+                        title={"Change filter mode: " + options.filter_mode}
+                        onClick={changeFilterMode}
+                    >
                         <img className="toggle" src={icons.repeat2Icon} alt="" />
                     </button>
                     <button id="exchange_button" title="Change mode" onClick={changeMode}>
@@ -96,21 +127,7 @@ export const FilterContainer = ({ options, setOptions, medias, setMedias, curren
                 </div>
             </div>
 
-            {!["jjgirl", "youtube"].includes(currentPageName) && (
-                <div>
-                    <FilterUrl
-                        options={options}
-                        changeFilterUrl={changeFilterUrl}
-                        changeFilterUrlMode={changeFilterUrlMode}
-                    />
-                    {options.show_advanced_filters === "true" &&
-                        (options.filter_mode === "size" ? (
-                            <FilterSizes options={options} setOptions={setOptions} />
-                        ) : (
-                            <CustomizeUrl urlFiltering={options.filter_url} setChangeUrlTasks={setChangeUrlTasks} />
-                        ))}
-                </div>
-            )}
+            {displayFilter()}
         </div>
     );
 };

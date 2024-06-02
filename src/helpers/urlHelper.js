@@ -10,6 +10,8 @@ const urlJJGirlString = "http://www.jjgirls.com/japanese/#nameModel#/#pageNumber
 
 const tumblrHiddenIframeSelector = 'iframe[class="photoset"]';
 
+const PAGE_MODE = ["jjgirl", "cyberdrop", "telegram", "rule34", "jpgchurch", "normal", "tumblr", "reddit", "mrcong"];
+
 /**
  * It returns true if the url is a valid video url, and false otherwise
  * @param url - The URL to test.
@@ -315,12 +317,7 @@ export const collectMediasFromPage = (pageDoc) => {
 export const changeOptionsMode = (mode, currentPageName) => {
     let newMode;
     if (mode === "tab") newMode = currentPageName;
-    if (
-        ["jjgirl", "cyberdrop", "telegram", "rule34", "jpgchurch", "normal", "tumblr", "reddit", "mrcong"].includes(
-            mode
-        )
-    )
-        newMode = "tab";
+    if (PAGE_MODE.includes(mode)) newMode = "tab";
     return newMode;
 };
 

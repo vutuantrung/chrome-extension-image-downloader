@@ -222,15 +222,16 @@ function suggestNewFilename(item, suggest) {
     if (task.options.folder_name) {
         newFilename += `${task.options.folder_name.trim()}/`;
     }
+    let genre = task.options.genre === "none" ? "" : `[${task.options.genre}]`;
     if (task.options.new_file_name) {
         const regex = /(?:\.([^.]+))?$/;
         const extension = regex.exec(item.filename)[1];
         // const numberOfDigits = task.mediasToDownload.length.toString().length;
         const formattedImageNumber = `${task.startIndex}`.padStart(3, "0");
 
-        newFilename += `${task.options.new_file_name}${formattedImageNumber}.${extension}`;
+        newFilename += `${genre}${task.options.new_file_name}_${formattedImageNumber}.${extension}`;
     } else {
-        newFilename += item.filename;
+        newFilename += `${genre}${item.filename}`;
     }
 
     suggest({

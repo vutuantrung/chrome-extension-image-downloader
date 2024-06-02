@@ -2,6 +2,8 @@
 
 export const downloadMedias = (mediasToDownload, options) => {
     return new Promise((resolve) => {
+        console.log('[mediasToDownload]', mediasToDownload);
+        console.log('[options]', options);
         chrome.runtime.sendMessage({ type: "downloadMedias", mediasToDownload, options }, (data) => {
             resolve(data);
         });

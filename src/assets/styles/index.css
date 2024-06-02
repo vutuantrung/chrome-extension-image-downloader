@@ -425,6 +425,11 @@ main {
     border-radius: 4px;
 }
 
+.url-text-filter-result {
+    overflow: hidden;
+    max-width: 365px;
+}
+
 .waiting-component {
     display: flex;
     align-items: center;

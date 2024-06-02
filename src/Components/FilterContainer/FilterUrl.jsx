@@ -13,7 +13,7 @@ export const FilterUrl = ({ changeFilterUrlMode, changeFilterUrl, options }) => 
                 onChange={changeFilterUrl}
             />
 
-            <select value={options.filter_url_mode} onChange={changeFilterUrlMode} style={{ margin: "5px" }} s>
+            <select value={options.filter_url_mode} onChange={changeFilterUrlMode} style={{ margin: "5px" }}>
                 <option value="normal" title={TEXTS.normalTitle}>
                     Text
                 </option>

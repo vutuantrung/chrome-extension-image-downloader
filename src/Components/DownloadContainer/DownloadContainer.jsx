@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRunAfterUpdate } from "../../hooks/useRunAfterUpdate";
 import { removeSpecialCharacters, isNumericString, generateRandomId, getCurrentDateText } from "../../utils";
-import { icons } from "../../constants/index";
+import { TEXTS, icons } from "../../constants/index";
 import * as chromeActions from "../../actions";
 
 export const DownloadContainer = ({ options, setOptions, mediasToDownload, tabsMedias, setTabsMedias }) => {
@@ -67,10 +67,14 @@ export const DownloadContainer = ({ options, setOptions, mediasToDownload, tabsM
         setOptions((options) => ({ ...options, start_index: curIdx }));
     }
 
+    function mediaGenreChange({ currentTarget: { value } }) {
+        setOptions((options) => ({ ...options, genre: value.trim() }));
+    }
+
     function suggestNewName() {
         let id = generateRandomId(5);
         let date = getCurrentDateText();
-        let prefName = "#id#_#date#_".replace("#id#", id).replace("#date#", date);
+        let prefName = "#id#_#date#".replace("#id#", id).replace("#date#", date);
 
         setOptions((options) => ({
             ...options,
@@ -110,9 +114,7 @@ export const DownloadContainer = ({ options, setOptions, mediasToDownload, tabsM
             id="downloads_container"
             style={{
                 width: "100%",
-                gridTemplateColumns: `${
-                    options.show_file_renaming === "true" ? "minmax(110px, 1fr)" : ""
-                } minmax(130px, 1fr) 40px 35px 80px`,
+                gridTemplateColumns: `90px 100px 40px 80px 30px 80px`,
             }}
         >
             <input
@@ -137,7 +139,26 @@ export const DownloadContainer = ({ options, setOptions, mediasToDownload, tabsM
                 title="Set start index for custom file name"
                 value={options.start_index}
                 onChange={startIndexChange}
+                style={{ marginRight: "2px" }}
             />
+
+            <select onChange={mediaGenreChange}>
+                <option value="none" title={TEXTS.normalTitle} selected>
+                    None
+                </option>
+                <option value="3d" title={TEXTS.wildcardTitle}>
+                    3D
+                </option>
+                <option value="hentai" title={TEXTS.regexTitle}>
+                    Hentai
+                </option>
+                <option value="asian" title={TEXTS.regexTitle}>
+                    Asian
+                </option>
+                <option value="western" title={TEXTS.regexTitle}>
+                    Western
+                </option>
+            </select>
 
             <input
                 type="button"

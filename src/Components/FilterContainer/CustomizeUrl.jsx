@@ -1,9 +1,9 @@
 import "../../assets/styles/index.css";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { generateRandomId, replaceStringAtPosition } from "../../utils";
+import { generateRandomId, replaceStringAtPosition, getCountSubstring } from "../../utils";
 import { icons } from "../../constants";
 
-/** Use to replace filter url specific text */
+/** Use to replace filter url specific text at specific position */
 export const CustomizeUrl = ({ urlFiltering, setChangeUrlTasks }) => {
     const urlFilteringEl = useRef(null);
     const containerEl = useRef(null);
@@ -13,7 +13,7 @@ export const CustomizeUrl = ({ urlFiltering, setChangeUrlTasks }) => {
     const [validChanging, setValidChanging] = useState(true);
     const [searchingText, setSearchingText] = useState("");
     const [replacingText, setReplacingText] = useState("");
-    const [foundText, setFoundText] = useState(0);
+    const [countNumberfoundText, setCountNumberFoundText] = useState(0);
     const [replacingPos, setReplacingPos] = useState(0);
 
     const tableStyle = useMemo(() => {
@@ -33,7 +33,7 @@ export const CustomizeUrl = ({ urlFiltering, setChangeUrlTasks }) => {
         let curText = e.target.value;
         let curFound = getCountSubstring(currentText, curText);
 
-        setFoundText(curFound);
+        setCountNumberFoundText(curFound);
         setSearchingText(curText);
         highlightText(curText, replacingPos);
     }
@@ -107,17 +107,10 @@ export const CustomizeUrl = ({ urlFiltering, setChangeUrlTasks }) => {
         );
     }
 
-    function getCountSubstring(value, sub) {
-        if (sub.length === 0) return 0;
-        let regex = new RegExp(sub, "gi");
-        let count = (value.match(regex) || []).length;
-        return count;
-    }
-
     return (
         <div ref={containerEl} className="url-customize-container">
             <div className="url-customize">
-                <div ref={urlFilteringEl} className="text"></div>
+                <div ref={urlFilteringEl} className="text url-text-filter-result"></div>
                 <button id="exchange_button" title="Undo" onClick={undoChange}>
                     <img src={icons.backIcon} alt="" />
                 </button>
@@ -129,31 +122,42 @@ export const CustomizeUrl = ({ urlFiltering, setChangeUrlTasks }) => {
                 <colgroup>
                     <col />
                     <col />
-                    <col style={{ width: "45px" }} />
-                    <col style={{ width: "45px" }} />
+                    <col style={{ width: "30px" }} />
+                    <col style={{ width: "30px" }} />
                     <col style={{ width: "30px" }} />
                 </colgroup>
                 <tbody>
                     <tr>
                         <td>
-                            <input type="text" placeholder="Searching" onChange={handleSearchingValueChange} />
-                        </td>
-                        <td>
-                            <input type="text" placeholder="Replacing" onChange={handleReplacingValueChange} />
-                        </td>
-                        <td>
                             <input
                                 type="text"
-                                value={foundText}
-                                style={{ width: 40 }}
-                                placeholder="F"
-                                onChange={(e) => {}}
+                                title="Searching text in above url"
+                                placeholder="Searching"
+                                onChange={handleSearchingValueChange}
                             />
                         </td>
                         <td>
                             <input
-                                type="number"
-                                style={{ width: 40 }}
+                                type="text"
+                                title="Replacing text"
+                                placeholder="Replacing"
+                                onChange={handleReplacingValueChange}
+                            />
+                        </td>
+                        <td>
+                            <input
+                                readOnly
+                                type="text"
+                                value={countNumberfoundText}
+                                style={{ width: 30 }}
+                                title="Number of position found for searching text"
+                                // onChange={(e) => {}}
+                            />
+                        </td>
+                        <td>
+                            <input
+                                type="text"
+                                style={{ width: 30, height: 30, padding: 5, textAlign: "center" }}
                                 min={0}
                                 defaultValue={0}
                                 onChange={handleIndexesValueChange}

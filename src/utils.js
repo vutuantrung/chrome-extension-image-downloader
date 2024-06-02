@@ -244,3 +244,10 @@ export const parseJwt = (token) => {
     );
     return JSON.parse(jsonPayload);
 }
+
+export const getCountSubstring = (value, sub) => {
+    if (sub.length === 0) return 0;
+    let regex = new RegExp(sub, "gi");
+    let count = (value.match(regex) || []).length;
+    return count;
+}
