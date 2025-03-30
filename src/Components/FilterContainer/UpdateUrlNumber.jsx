@@ -1,1 +1,1 @@
-export const UpdateUrlNumber = () => {};
+export const UpdateUrlNumber = () => { };
