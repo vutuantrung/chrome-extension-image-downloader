@@ -224,7 +224,7 @@ const App = () => {
 
 			if (pageName === 'youtube') {
 				const result = await getYoutubeVideoInformation(currentPageInfor.baseUri);
-				setYoutubeData(result?.data?.data ?? undefined);
+				setYoutubeData(result);
 			}
 
 			if (pageName === 'jjgirl') {
