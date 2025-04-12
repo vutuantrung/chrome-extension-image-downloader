@@ -99,8 +99,7 @@ const App = () => {
 				case 'regex':
 					medias = medias.filter((media) => {
 						try {
-							const url =
-								media.mediaType === 'image' ? media.src : media.thumbs;
+							const url = media.mediaType === 'image' ? media.src : media.thumbs;
 							return url.match(filterValue);
 						} catch (error) {
 							return false;
@@ -159,7 +158,7 @@ const App = () => {
 			let allM, linkedM;
 			// Current page information (base uri, DOM)
 			const currentPageInfor = await getCurrentPageElement();
-			const pageName = getSpecificPageName(currentPageInfor.baseUri);
+			const pageName = getSpecificPageName(currentPageInfor?.baseUri);
 
 			// Set mode
 			setOptions((options) => ({
@@ -297,6 +296,9 @@ const App = () => {
 
 	async function getCurrentPageElement() {
 		const pageDOM = await chromeActions.getPageDOMElement();
+		if (!pageDOM) {
+			return null;
+		}
 		return {
 			baseUri: pageDOM.baseUri,
 			dom: parseHtmlString(pageDOM),

@@ -334,6 +334,7 @@ export const getIconByMode = (mode) => {
 	if (mode === "reddit") return IMAGES.redditIconImage;
 	if (mode === "mrcong") return IMAGES.mrcongIconImage;
 	if (mode === "youtube") return IMAGES.youtubeIconImage;
+	if (mode === "exhentai") return IMAGES.exHentaiIconImage;
 
 	return icons.browserIcon;
 };

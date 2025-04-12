@@ -8,6 +8,7 @@ import { changeOptionsMode, getIconByMode } from "../../helpers/urlHelper";
 import { useEffect, useState } from "react";
 import { FilterUrl } from "./FilterUrl";
 import images from "../../constants/images";
+import { ModeRetrieve } from "./ModeRetrieve";
 
 export const FilterContainer = ({ options, setOptions, medias, setMedias, currentPageName }) => {
 	const [showOptionMenu, setShowOptionMenu] = useState(false);
@@ -57,12 +58,13 @@ export const FilterContainer = ({ options, setOptions, medias, setMedias, curren
 	}
 
 	function changeFilterMode() {
-		let newMode;
-		if (options.filter_mode === "size") newMode = "url";
-		if (options.filter_mode === "url") newMode = "collect";
-		if (options.filter_mode === "collect") newMode = "size";
+		let nextMode;
+		if (options.filter_mode === "size") nextMode = "url";
+		if (options.filter_mode === "url") nextMode = "collect";
+		if (options.filter_mode === "collect") nextMode = "retrieve";
+		if (options.filter_mode === "retrieve") nextMode = "size";
 
-		setOptions((options) => ({ ...options, filter_mode: newMode }));
+		setOptions((options) => ({ ...options, filter_mode: nextMode }));
 	}
 
 	function changeMode() {
@@ -89,6 +91,9 @@ export const FilterContainer = ({ options, setOptions, medias, setMedias, curren
 		}
 		if (options.filter_mode === "collect") {
 			filterMode = <CollectMedia urlFiltering={options.filter_url} setChangeUrlTasks={setChangeUrlTasks} />;
+		}
+		if (options.filter_mode === "retrieve") {
+			filterMode = <ModeRetrieve />
 		}
 
 		return (

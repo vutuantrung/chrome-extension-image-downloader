@@ -24,34 +24,36 @@ import ytOffline from "../assets/images/yt-offline.jpeg";
 import userIconImage from "../assets/images/user-icon.png";
 import storageIconImage from "../assets/images/storage-icon.png";
 import storageCloudIconImage from "../assets/images/storage-cloud-icon.png";
+import exHentaiIconImage from "../assets/images/exhentai-icon.png";
 
 import userAvatar from "../assets/images/avatar.jpg";
 
 const images = {
-    loadingImage,
-    videoPlayImage,
-    telegramIconImage,
-    cyberdropIconImage,
-    jjgirlsIconImage,
-    jjgirlsFaviconImage,
-    rule34FaviconImage,
-    jpgChurchFaviconImage,
-    tumblrIconImage,
-    redditIconImage,
-    mrcongIconImage,
-    userIconImage,
-    storageIconImage,
-    storageCloudIconImage,
-    youtubeIconImage,
-    mp4FormatIcon,
-    webmFormatIcon,
-    videoIcon,
-    audioIcon,
-    uploadIcon,
-    userAvatar,
-    error404Image,
-    ytOffline,
-    ytVideoDeleted,
+	loadingImage,
+	videoPlayImage,
+	telegramIconImage,
+	cyberdropIconImage,
+	jjgirlsIconImage,
+	jjgirlsFaviconImage,
+	rule34FaviconImage,
+	jpgChurchFaviconImage,
+	tumblrIconImage,
+	redditIconImage,
+	mrcongIconImage,
+	userIconImage,
+	storageIconImage,
+	storageCloudIconImage,
+	youtubeIconImage,
+	mp4FormatIcon,
+	webmFormatIcon,
+	videoIcon,
+	audioIcon,
+	uploadIcon,
+	userAvatar,
+	error404Image,
+	ytOffline,
+	ytVideoDeleted,
+	exHentaiIconImage,
 };
 
 export default images;

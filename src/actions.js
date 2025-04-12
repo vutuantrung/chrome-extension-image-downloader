@@ -10,6 +10,14 @@ export const downloadMedias = (mediasToDownload, options) => {
 	});
 };
 
+export const retrieveMediaFromTabs = (pageName) => {
+	return new Promise((resolve) => {
+		chrome.runtime.sendMessage({ type: "RETRIEVE_MEDIA_FROM_TABS", pageName }, (data) => {
+			resolve(data);
+		});
+	});
+};
+
 export const getMediasFromTabs = () => {
 	return new Promise((resolve) => {
 		chrome.runtime.sendMessage({ type: "GET_TABS_MEDIAS" }, (data) => {

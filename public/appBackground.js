@@ -43,6 +43,14 @@ function listeners(message, sender, sendResponse) {
 		return true;
 	}
 
+	if (message.type === "RETRIEVE_MEDIA_FROM_TABS") {
+		console.log("hereee")
+		retrieveMediaFromTabs(message.pageName).then((result) => {
+			sendResponse(result);
+		});
+		return true;
+	}
+
 	if (message.type === "GET_TABS_MEDIAS") {
 		extractMediasFromTabs().then((result) => {
 			sendResponse({ tabMedias: result });
@@ -290,30 +298,120 @@ function getCookieFromPage() {
 	});
 }
 
+function retrieveMediaFromTabs(pageName) {
+	console.log(pageName)
+	return new Promise((resolve, reject) => {
+		chrome.tabs.query({ currentWindow: true }, (tabs) => {
+			for (let i = 0; i < tabs.length; i++) {
+				const tab = tabs[i];
+				if (pageName === "exhentai" && tab.url.startsWith("https://exhentai.org/s/")) {
+					chrome.tabs.reload(tab.id, () => {
+						const listener = function (updatedTabId, info) {
+							if (updatedTabId === tab.id && info.status === "complete") {
+								chrome.tabs.onUpdated.removeListener(listener); // avoid multiple calls
+								chrome.scripting.executeScript({
+									target: { tabId: tabs[i].id },
+									func: retrieveElementContent,
+									args: [pageName]
+								}, (results) => {
+									if (chrome.runtime.lastError) {
+										console.warn(`Tab ${tabs[i].id}:`, chrome.runtime.lastError.message);
+										reject();
+									}
+									const { src } = results?.[0]?.result;
+									if (src) {
+										chrome.tabs.create({ url: src });     // Open new tab with image
+										chrome.tabs.remove(tab.id);           // Close original tab
+									}
+
+									resolve(true);
+								});
+							}
+						}
+						chrome.tabs.onUpdated.addListener(listener);
+					})
+				}
+				if (pageName === "rule34" && tab.url.startsWith("https://rule34.xxx/index.php?page=post&s=view&id=")) {
+					chrome.scripting.executeScript({
+						target: { tabId: tab.id },
+						func: retrieveElementContent,
+						args: [pageName]
+					}, (results) => {
+						if (chrome.runtime.lastError) {
+							console.warn(`Tab ${tab.id}:`, chrome.runtime.lastError.message);
+							reject();
+						}
+
+						const { type, src } = results?.[0]?.result;
+						if (type === "img" && src) {
+							chrome.tabs.create({ url: src });     // Open new tab with image
+							chrome.tabs.remove(tab.id);           // Close original tab
+						}
+
+						if (type === "vid" && src) {
+							chrome.windows.create({
+								url: src,
+								type: "popup",
+								focused: true
+							});
+							chrome.tabs.remove(tab.id);           // Close original tab
+						}
+
+						resolve(true);
+					});
+				}
+			}
+		});
+	});
+}
+
+function retrieveElementContent(pageName) {
+	if (pageName === "rule34") {
+		const elImage = document.querySelector("img[id='image']"); // replace with your selector
+		if (elImage) {
+			return { type: "img", src: elImage.src };
+		}
+	}
+	if (pageName === "exhentai") {
+		const elImage = document.querySelector("img[id='img']"); // replace with your selector
+		if (elImage) {
+			return { type: "img", src: elImage.src };
+		}
+
+		const elVideo = document.querySelector("video[id='gelcomVideoPlayer']"); // replace with your selector
+		if (elVideo) {
+			return { type: "vid", src: elVideo.src };
+		}
+	}
+	return null;
+}
+
 function extractMediasFromTabs() {
 	return new Promise((resolve) => {
 		const tabsToReturn = [];
 		chrome.tabs.query({ currentWindow: true }, async (tabs) => {
 			for (let i = 0; i < tabs.length; i++) {
-				const tabObj = {
-					id: generateRandomId(7),
-					tabId: tabs[i].id,
-					mediaType: "image",
-					thumbs: tabs[i].url,
-					src: tabs[i].url,
-				};
+				if (tabs[i].url.startsWith("http") && !tabs[i].url.includes("chrome://")) {
+					const tabObj = {
+						id: generateRandomId(7),
+						tabId: tabs[i].id,
+						mediaType: "image",
+						thumbs: tabs[i].url,
+						src: tabs[i].url,
+					};
 
-				// regex captures extension
-				const urlFileExtension = tabs[i].url.match(/.+\.([^?]+)(\?|$)/);
-				if (urlFileExtension) {
-					if (imageExtensions[urlFileExtension[1].toLowerCase()]) {
-						tabsToReturn.push(tabObj);
-					} else {
-						const response = await fetch(tabs[i].url);
-						const contentType = response.headers.get("content-type");
-						const isImageUrl = imageMimeTypes[contentType] || false;
-						if (isImageUrl) {
+					// regex captures extension
+					const urlFileExtension = tabs[i].url.match(/.+\.([^?]+)(\?|$)/);
+					if (urlFileExtension) {
+						if (imageExtensions[urlFileExtension[1].toLowerCase()]) {
 							tabsToReturn.push(tabObj);
+						} else {
+							const response = await fetch(tabs[i].url);
+							const contentType = response.headers.get("content-type");
+							const isImageUrl = imageMimeTypes[contentType] || false;
+							if (isImageUrl) {
+								tabsToReturn.push(tabObj);
+							}
 						}
 					}
 				}
@@ -342,4 +440,8 @@ function generateRandomId(length) {
 
 function normalizeSlashes(filename) {
 	return filename.replace(/\\/g, "/").replace(/\/{2,}/g, "/");
+}
+
+async function sleep(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }

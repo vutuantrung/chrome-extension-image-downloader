@@ -27,14 +27,15 @@ export const Youtube = (props) => {
 
 		return [...film, ...video, ...audio];
 	};
-
-	if (data === undefined) {
+	console.log("Youtube data", data);
+	if (data === undefined || !data.success) {
 		return (
 			<div style={{ margin: "20px" }}>
 				<img src={images.error404Image} alt="" />
 			</div>
 		);
 	}
+	console.log("Youtube data 2");
 
 	return (
 		<div className="yt-content">
@@ -49,7 +50,7 @@ export const Youtube = (props) => {
 			{/* Formats */}
 			<div className="formats">
 				{sortItems(data.medias).map((f, index) => {
-					const priorityVideo = f.type === "video" && parseInt(f.quality.replace("p", "")) > 2160;
+					const priorityVideo = f.type === "video" && parseInt(f.quality.split("p")[0]) > 2160;
 					const videoDetails = f.quality;
 					return (
 						<div
