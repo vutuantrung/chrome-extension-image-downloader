@@ -1,4 +1,13 @@
 /*global chrome*/
+const MENU_SEND_HIGHLIGHTED_TEXT = "send-highlight-to-local-server";
+const MENU_CAPTURE_AREA = "capture-area";
+const MENU_COLLECT_CODE_DOM = "extract-elements";
+const MENU_COLLECT_CODE_HREF = "collect-hrefs";
+const MENU_COLLECT_IDOL_NAME_DOM = "collect-idol-name-dom";
+
+const dateLength = "-------------".length;
+
+const ENDPOINT = "http://localhost:3125/api/saveIdentify";
 
 const tasks = new Set();
 // const tabsWithImages = {};
@@ -21,6 +30,179 @@ const imageExtensions = {
 
 chrome.runtime.onMessage.addListener(listeners);
 chrome.downloads.onDeterminingFilename.addListener(suggestNewFilename);
+chrome.runtime.onInstalled.addListener(() => {
+	chrome.contextMenus.create({
+		id: MENU_SEND_HIGHLIGHTED_TEXT,
+		title: "Send highlighted text",
+		contexts: ["selection"] // only show when text is selected
+	});
+
+	chrome.contextMenus.create({
+		id: MENU_COLLECT_CODE_DOM,
+		title: "Collect code from DOM",
+		contexts: ["page"]
+	});
+
+	chrome.contextMenus.create({
+		id: MENU_COLLECT_CODE_HREF,
+		title: "Collect code from href",
+		contexts: ["all"]
+	});
+
+	chrome.contextMenus.create({
+		id: MENU_COLLECT_IDOL_NAME_DOM,
+		title: "Collect idol name from DOM",
+		contexts: ["all"]
+	});
+});
+
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+	if (!tab?.id) return;
+
+	if (info.menuItemId === MENU_SEND_HIGHLIGHTED_TEXT) {
+		const selectedText = (info.selectionText || "").trim();
+		if (!selectedText) return;
+
+		const payload = {
+			text: selectedText,
+			url: tab?.url || "",
+			title: tab?.title || "",
+			ts: new Date().toISOString()
+		};
+
+		try {
+			const res = await fetch(ENDPOINT, {
+				method: "POST",
+				headers: {
+					"accept": "application/json",
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({ text: selectedText })
+			});
+
+			if (!res.ok) {
+				const body = await res.text().catch(() => "");
+				console.error("Server returned error:", res.status, body);
+				return;
+			}
+
+			console.log("Sent highlight OK:", payload);
+		} catch (err) {
+			console.error("Failed to send highlight:", err);
+		}
+	}
+
+	if (info.menuItemId === MENU_CAPTURE_AREA) {
+		await chrome.tabs.sendMessage(tab.id, { type: "START_AREA_SELECTION" });
+		return;
+	}
+
+	if (info.menuItemId === MENU_COLLECT_CODE_DOM) {
+		try {
+			const result = await chrome.tabs.sendMessage(tab.id, {
+				type: "MENU_COLLECT_CODE_DOM",
+				content: "code"
+			});
+			if (!result.ok) {
+				throw new Error(result.error);
+			}
+
+			const data = result.data.trim().length > dateLength ? ("_" + result.data.trim()) : result.data;
+			if (data) console.log('[MENU_COLLECT_CODE_DOM]', data)
+			fetch(ENDPOINT, {
+				method: "POST",
+				headers: {
+					"accept": "application/json",
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({ text: data })
+			})
+				.then((response) => response.json())
+				.then((data) => console.log('Success:', data))
+				.catch((error) => {
+					console.error('Error:', error);
+				});
+
+			if (data) console.log('[MENU_COLLECT_CODE_DOM]', data)
+		} catch (e) {
+			console.error("Extract elements failed:", e);
+		}
+	}
+
+	if (info.menuItemId === MENU_COLLECT_CODE_HREF) {
+		try {
+			// Ask content script to collect from last right-clicked element
+			const result = await chrome.tabs.sendMessage(tab.id, {
+				type: "MENU_COLLECT_CODE_HREF",
+				content: "code"
+			});
+
+			if (!result.ok) {
+				throw new Error(result.error);
+			}
+			const crawledHref = result.hrefs[0]?.href;
+			let data = "";
+			if (crawledHref?.startsWith("https://javher.com/video/watch-")) {
+				data = crawledHref?.replace("https://javher.com/video/watch-", "");
+			}
+			if (crawledHref?.startsWith("https://www.javdatabase.com")) {
+				data = crawledHref?.match(/https:\/\/www\.javdatabase\.com\/movies\/(.*){1}\//)[1];
+			}
+			data = data.trim().length > dateLength ? ("_" + data.trim()) : data;
+
+			if (data) console.log('[MENU_COLLECT_CODE_HREF]', data)
+			fetch(ENDPOINT, {
+				method: "POST",
+				headers: {
+					"accept": "application/json",
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({ text: data })
+			})
+				.then((response) => response.json())
+				.then((data) => console.log('Success:', data))
+				.catch((error) => {
+					console.error('Error:', error);
+				});
+
+
+		} catch (e) {
+			console.error("Collect hrefs failed:", e);
+		}
+	}
+
+	if (info.menuItemId === MENU_COLLECT_IDOL_NAME_DOM) {
+		try {
+			const result = await chrome.tabs.sendMessage(tab.id, {
+				type: "MENU_COLLECT_IDOL_NAME_DOM",
+				content: "idol"
+			});
+			if (!result.ok) {
+				throw new Error(result.error);
+			}
+
+			const data = result.data.trim().length > dateLength ? ("_" + result.data.trim()) : result.data;
+			if (data) console.log('[MENU_COLLECT_IDOL_NAME_DOM]', data)
+			fetch(ENDPOINT, {
+				method: "POST",
+				headers: {
+					"accept": "application/json",
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({ text: data })
+			})
+				.then((response) => response.json())
+				.then((data) => console.log('Success:', data))
+				.catch((error) => {
+					console.error('Error:', error);
+				});
+
+			if (data) console.log('[MENU_COLLECT_IDOL_NAME_DOM]', data)
+		} catch (e) {
+			console.error("Extract elements failed:", e);
+		}
+	}
+});
 
 function listeners(message, sender, sendResponse) {
 	if (message.type === "DOWNLOAD_MEDIAS") {
@@ -44,7 +226,6 @@ function listeners(message, sender, sendResponse) {
 	}
 
 	if (message.type === "RETRIEVE_MEDIA_FROM_TABS") {
-		console.log("hereee")
 		retrieveMediaFromTabs(message.pageName).then((result) => {
 			sendResponse(result);
 		});
